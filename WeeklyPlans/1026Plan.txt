@@ -1,1 +1,4 @@
-
+Ansh: Tackle 1 competition paper replication, finish uploading test data to test data folder, add presentation to presentation folder
+Suru: Tackle replication of MATLAB paper, finish organizing Github
+Mateo: Data Exploration, work with the toolkit
+Bohan: Tackle 1 competition paper replication
