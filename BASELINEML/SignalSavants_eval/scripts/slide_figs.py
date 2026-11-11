@@ -14,7 +14,7 @@ from paths import P
 
 PROJ = Path(P["PROJ"])
 PRED = PROJ / "sigsav_out_test"
-SCORES = PROJ / "sigsav_scores_placed.csv"
+SCORES = Path(P["EVAL"]) / "results" / "dev_sample" / "scores.csv"
 DATASET = Path(P["DATASET"])
 OUT = Path(P["EVAL"]) / "results" / "dev_sample_figs"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -24,7 +24,7 @@ OFF = {"AVR": 2.5, "AVL": 2.5, "AVF": 2.5, "V1": 5.0, "V2": 5.0, "V3": 5.0,
 
 # table: per hospital and image index
 d = pd.read_csv(SCORES)
-d = d[d.status.isin(["ok", "missing"])].copy()
+d = d[d.status.isin(["ok", "missing", "empty"])].copy()
 d["idx"] = d.image.str.rsplit("_", n=1).str[1]
 d["usable"] = d.snr_aligned.notna()
 t = d.groupby(["hospital", "idx"]).agg(
