@@ -75,16 +75,28 @@ def get_parser():
     return parser
 
 
+ROT_INFO = ""
+
+
 def get_rotation_angle(np_image):
     """Get the rotation angle of the image."""
-    lines = get_lines(np_image, threshold_HoughLines=1200)
-    filtered_lines = filter_lines(
-        lines, degree_window=30, parallelism_count=3, parallelism_window=2
-    )
+    global ROT_INFO
+    filtered_lines = None
+    for thr in (1200, 800, 500):
+        lines = get_lines(np_image, threshold_HoughLines=thr)
+        if lines is not None and len(lines) > 400:
+            lines = lines[:400]
+        filtered_lines = filter_lines(
+            lines, degree_window=30, parallelism_count=3, parallelism_window=2
+        )
+        if filtered_lines is not None:
+            break
     if filtered_lines is None:
-        rot_angle = np.nan
+        rot_angle = 0.0
+        ROT_INFO = "fallback_0deg"
     else:
         rot_angle = get_median_degrees(filtered_lines)
+        ROT_INFO = f"hough_thr{thr}"
     return rot_angle
 
 
@@ -136,16 +148,12 @@ def filter_lines(lines, degree_window=20, parallelism_count=0, parallelism_windo
     # Further filter lines based on parallelism
     parallel_lines = []
     if len(filtered_lines) > 0:
-        for rho, theta in filtered_lines:
-            count = 0
-            for comp_rho, comp_theta in filtered_lines:
-                if (
-                    abs(theta - comp_theta) < parallelism_radian
-                    or abs((theta - comp_theta) - np.pi) < parallelism_radian
-                ):
-                    count += 1
-            if count >= parallelism_count:
-                parallel_lines.append((rho, theta))
+        fl = np.array(filtered_lines)
+        th = fl[:, 1]
+        diff = th[:, None] - th[None, :]
+        close = (np.abs(diff) < parallelism_radian) | (np.abs(diff - np.pi) < parallelism_radian)
+        counts = close.sum(axis=1)
+        parallel_lines = [tuple(fl[i]) for i in np.nonzero(counts >= parallelism_count)[0]]
 
     if len(parallel_lines) == 0:
         parallel_lines = None
@@ -154,6 +162,8 @@ def filter_lines(lines, degree_window=20, parallelism_count=0, parallelism_windo
 
     return parallel_lines
 
+
+FOLD = os.environ.get("NNUNET_FOLD", "all")
 
 def predict_mask_nnunet(image, dataset_name, model_folder):
     """Predict the mask using nnUNet."""
@@ -176,10 +186,10 @@ def predict_mask_nnunet(image, dataset_name, model_folder):
 
     # Run inference
     if torch.cuda.is_available():
-        command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f all -tr nnUNetTrainer -c 2d -p nnUNetPlans"
+        command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f {FOLD} -tr nnUNetTrainer -c 2d -p nnUNetPlans"
     else:
         print("CUDA not available. Running on CPU.")
-        command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f all -tr nnUNetTrainer -c 2d -p nnUNetPlans -device cpu --verbose"
+        command_run = f"nnUNetv2_predict -d {dataset_name} -i {temp_folder_input} -o {temp_folder_output} -f {FOLD} -tr nnUNetTrainer -c 2d -p nnUNetPlans -device cpu --verbose"
     subprocess.run(command_run, shell=True)
 
     # Get masks
@@ -349,6 +359,7 @@ def run(args):
 
         # Rotate
         rot_angle = get_rotation_angle(image.permute(1, 2, 0).numpy().astype(np.uint8))
+        print(f"ROTATION {record} {ROT_INFO} angle={rot_angle}")
         image_rotated = rotate(image, rot_angle)
 
         # Segment
