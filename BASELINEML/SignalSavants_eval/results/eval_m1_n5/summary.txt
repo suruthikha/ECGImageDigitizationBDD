@@ -1,0 +1,29 @@
+tag: eval_m1_n5 | images expected: 100 | predictions: /expanse/lustre/projects/jhu159/agoyal5/work/eval_m1_n5/out
+aligned = approximation (+-25 samples shift, DC removed); NOT the official Challenge metric
+layout assumed for every hospital: {'I': 0.0, 'II': 0.0, 'III': 0.0, 'AVR': 2.5, 'AVL': 2.5, 'AVF': 2.5, 'V1': 5.0, 'V2': 5.0, 'V3': 5.0, 'V4': 7.5, 'V5': 7.5, 'V6': 7.5} (unverified for D1)
+a negative SNR is worse than predicting zeros
+
+D0: images 50 | failed 0 | skipped (not 10 s) 0 | records scored 5 | usable leads 72%
+    lead-level median: window -0.11, aligned 1.24
+    record-level median aligned 1.23 (95% CI 0.77 to 2.12, bootstrap over records)
+D1: images 20 | failed 0 | skipped (not 10 s) 0 | records scored 5 | usable leads 66%
+    lead-level median: window -3.97, aligned 1.06
+    record-level median aligned 1.35 (95% CI 0.03 to 2.64, bootstrap over records)
+D2: images 30 | failed 0 | skipped (record is not 10 s) 30 | nothing scored
+
+              images  leads  usable_frac  window_median  aligned_median
+hospital idx                                                           
+D0       02        5     60         1.00           1.96            2.19
+         04        5     60         1.00          -0.09            1.25
+         05        5     60         1.00          -0.14            1.24
+         06        5     60         0.27         -14.18          -10.86
+         07        5     60         0.42         -10.98           -3.78
+         10        5     60         0.25          -5.88           -5.40
+         11        5     60         0.23         -14.59           -8.88
+         12        5     60         1.00          -2.00            1.71
+         13        5     60         1.00          -1.73            1.07
+         15        5     60         1.00           2.16            2.20
+D1       04        5     60         1.00          -3.29            1.81
+         05        5     60         1.00          -2.81            1.69
+         06        5     60         0.22          -8.17           -3.50
+         07        5     60         0.43          -6.19           -0.89

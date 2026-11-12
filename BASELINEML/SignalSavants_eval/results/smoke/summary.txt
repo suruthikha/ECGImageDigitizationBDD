@@ -1,0 +1,28 @@
+tag: smoke | images expected: 20 | predictions: /expanse/lustre/projects/jhu159/agoyal5/work/smoke/out
+aligned = approximation (+-25 samples shift, DC removed); NOT the official Challenge metric
+layout assumed for every hospital: {'I': 0.0, 'II': 0.0, 'III': 0.0, 'AVR': 2.5, 'AVL': 2.5, 'AVF': 2.5, 'V1': 5.0, 'V2': 5.0, 'V3': 5.0, 'V4': 7.5, 'V5': 7.5, 'V6': 7.5} (unverified for D1)
+a negative SNR is worse than predicting zeros
+
+D0: images 10 | failed 1 | skipped (not 10 s) 0 | records scored 1 | usable leads 71%
+    lead-level median: window 1.13, aligned 1.70
+    record-level median aligned 1.70 (95% CI n/a to n/a, bootstrap over records)
+D1: images 4 | failed 0 | skipped (not 10 s) 0 | records scored 1 | usable leads 50%
+    lead-level median: window -3.77, aligned 1.05
+    record-level median aligned 1.05 (95% CI n/a to n/a, bootstrap over records)
+D2: images 6 | failed 1 | skipped (record is not 10 s) 5 | nothing scored
+
+              images  leads  usable_frac  window_median  aligned_median
+hospital idx                                                           
+D0       02        1     12         1.00           3.25            3.40
+         04        1     12         1.00           1.22            2.16
+         05        1     12         1.00           1.11            2.00
+         06        1     12         0.33         -13.46          -11.17
+         10        1     12         0.08          -2.37           -0.37
+         11        1     12         0.00            NaN             NaN
+         12        1     12         1.00          -2.77            1.06
+         13        1     12         1.00          -1.97            0.58
+         15        1     12         1.00           2.92            3.02
+D1       04        1     12         1.00          -3.39            1.09
+         05        1     12         1.00          -6.69            1.05
+         06        1     12         0.00            NaN             NaN
+         07        1     12         0.00            NaN             NaN
